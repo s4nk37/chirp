@@ -1,9 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({Key? key}) : super(key: key);
+  final void Function(
+      String email, String password, String username, bool isLogin) submitFn;
+
+  const AuthForm({Key? key, required this.submitFn}) : super(key: key);
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -11,137 +12,129 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   bool _toggleVisibility = true;
-  bool _toggleButton = true;
+  bool _isLogin = true;
+  final _formKey = GlobalKey<FormState>();
+  String _userEmail = '';
+  String _userName = '';
+  String _userPassword = '';
 
-  String? validateEmail(String value) {
+  _validateEmail(String value) {
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(value)) {
-      return 'Enter Valid Email';
+      return 'Enter valid email';
     } else {
       return null;
     }
   }
 
+  _validatePassword(String value) {
+    if (value.isEmpty) {
+      return 'Password field cannot be empty';
+    }
+    // Use any password length of your choice here
+    if (value.length < 7) {
+      return 'Password length must be greater than 7';
+    }
+  }
+
+  _validateUserName(String value) {
+    if (value.isEmpty) {
+      return 'Username cannot be empty';
+    }
+  }
+
+  void _trySubmit() {
+    var isValid = _formKey.currentState!.validate();
+    FocusScope.of(context).unfocus();
+    if (isValid) {
+      _formKey.currentState!.save();
+      widget.submitFn(_userEmail, _userPassword, _userName, _isLogin);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Stack(
-        children: [
-          const Positioned(
-            bottom: 400,
-            child: CircleAvatar(
-              backgroundColor: Color(0xffC96CF6),
-              radius: 400,
-            ),
-          ),
-          const Positioned(
-            top: 600,
-            left: 100,
-            child: CircleAvatar(
-              backgroundColor: Color(0xff6966F1),
-              radius: 200,
-            ),
-          ),
-          const Positioned(
-            top: 300,
-            right: 200,
-            child: CircleAvatar(
-              backgroundColor: Color(0xff88EAF3),
-              radius: 300,
-            ),
-          ),
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaY: 70, sigmaX: 70),
-            child: Opacity(
-              opacity: 0.1,
-              child: Image.asset(
-                'assets/images/noise.png',
-                height: double.infinity,
-                width: double.infinity,
-                fit: BoxFit.fill,
-              ),
-            ),
-          ),
-          Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: Card(
-                borderOnForeground: false,
-                elevation: 0.0,
-                shadowColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                color: Colors.white.withOpacity(0.5),
-                margin: const EdgeInsets.all(20),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 40, horizontal: 40),
-                    child: Form(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(labelText: 'Email'),
-                          validator: (val) {
-                            validateEmail(val!);
-                          },
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          decoration:
-                              const InputDecoration(labelText: 'Username'),
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: _toggleVisibility,
-                          decoration: InputDecoration(
-                              labelText: 'Password',
-                              suffixIcon: IconButton(
-                                icon: Icon(_toggleVisibility
-                                    ? Icons.visibility
-                                    : Icons.visibility_off),
-                                onPressed: () {
-                                  setState(() {
-                                    _toggleVisibility = !_toggleVisibility;
-                                  });
-                                },
-                              )),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.indigoAccent.shade400,
-                            elevation: 0.0,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                          ),
-                          child: Text(_toggleButton ? "Login" : "Signup"),
-                        ),
-                        TextButton(
+    return Center(
+      child: Card(
+        borderOnForeground: false,
+        elevation: 0.0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        color: Colors.white.withOpacity(0.5),
+        margin: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+            child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      key: const ValueKey('email'),
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      validator: (val) => _validateEmail(val!),
+                      onSaved: (val) => _userEmail = val!,
+                    ),
+                    if (!_isLogin)
+                      TextFormField(
+                        key: const ValueKey('username'),
+                        keyboardType: TextInputType.text,
+                        decoration:
+                            const InputDecoration(labelText: 'Username'),
+                        validator: (val) => _validateUserName(val!),
+                        onSaved: (val) => _userName = val!,
+                      ),
+                    TextFormField(
+                      key: const ValueKey('password'),
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: _toggleVisibility,
+                      validator: (val) => _validatePassword(val!),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_toggleVisibility
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
-                              _toggleButton = !_toggleButton;
+                              _toggleVisibility = !_toggleVisibility;
                             });
                           },
-                          child: Text(_toggleButton
-                              ? "Create a new account"
-                              : "Already have an account?"),
                         ),
-                      ],
-                    )),
-                  ),
-                ),
-              ),
-            ),
-          )
-        ],
+                      ),
+                      onSaved: (val) => _userPassword = val!,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: _trySubmit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.indigoAccent.shade400,
+                        elevation: 0.0,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Text(_isLogin ? "Login" : "Signup"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                        });
+                      },
+                      child: Text(_isLogin
+                          ? "Create a new account"
+                          : "Already have an account?"),
+                    ),
+                  ],
+                )),
+          ),
+        ),
       ),
     );
   }
