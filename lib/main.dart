@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
+import 'screens/auth_screen.dart';
 
 bool shouldUseFirestoreEmulator = false;
 
@@ -21,10 +22,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Chirp',
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
       debugShowCheckedModeBanner: false,
-      home: ChatScreen(),
+      home: const AuthScreen(),
     );
   }
 }
