@@ -1,5 +1,4 @@
 import 'package:chirp/widgets/chat/new_message.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,50 +9,84 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chirp'),
-        elevation: 0.0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                icon: const Icon(
-                  Icons.menu_sharp,
-                  color: Colors.white,
+    return Container(
+      color: Colors.white24,
+      child: Stack(
+        children: [
+          Opacity(
+            opacity: 0.1,
+            child: Image.asset(
+              'assets/images/dark_bgchat.png',
+              height: double.infinity,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              centerTitle: true,
+              title: SizedBox(
+                width: 85,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('Chirp'),
+                    Container(
+                      height: 30,
+                      child: FittedBox(
+                          child: Image.asset(
+                        'assets/icon/bird.png',
+                        fit: BoxFit.contain,
+                      )),
+                    )
+                  ],
                 ),
-                onChanged: (itemIdentifier) {
-                  if (itemIdentifier == 'logout') {
-                    FirebaseAuth.instance.signOut();
-                  }
-                },
-                items: [
-                  DropdownMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.indigo,
+              ),
+              elevation: 0.0,
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      icon: const Icon(
+                        Icons.menu_sharp,
+                        color: Colors.white,
+                      ),
+                      onChanged: (itemIdentifier) {
+                        if (itemIdentifier == 'logout') {
+                          FirebaseAuth.instance.signOut();
+                        }
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'logout',
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: const [
+                              Icon(
+                                Icons.logout,
+                                color: Colors.indigo,
+                              ),
+                              Text("Log out"),
+                            ],
+                          ),
                         ),
-                        Text("Log out"),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: const [
-          Expanded(
-            child: Messages(),
-          ),
-          NewMessage(),
+            body: Column(
+              children: const [
+                Expanded(
+                  child: Messages(),
+                ),
+                NewMessage(),
+              ],
+            ),
+          )
         ],
       ),
     );

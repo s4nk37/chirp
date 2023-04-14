@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'message_bubble.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Messages extends StatelessWidget {
   const Messages({Key? key}) : super(key: key);
@@ -7,7 +9,10 @@ class Messages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('chat').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('chat')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
       builder: (ctx, chatSnapshot) {
         if (chatSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -21,20 +26,13 @@ class Messages extends StatelessWidget {
           child: ListView.builder(
             reverse: true,
             itemCount: chatDocs.length,
-            itemBuilder: (ctx, index) {
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    border: Border.all(width: 0.0, color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Text(
-                  chatDocs[index]['text'],
-                ),
-              );
-            },
+            itemBuilder: (ctx, index) => MessageBubble(
+              msg: chatDocs[index]['text'],
+              createdAt: chatDocs[index]['createdAt'],
+              isMe: chatDocs[index]['userId'] ==
+                  FirebaseAuth.instance.currentUser!.uid,
+              key: ValueKey(chatDocs[index].id),
+            ),
           ),
         );
       },
