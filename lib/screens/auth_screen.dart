@@ -1,7 +1,9 @@
 import 'dart:ui';
-
-import '../widgets/auth_form.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import '../widgets/auth/auth_form.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -11,8 +13,50 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  void _submitAuthForm(
-      String email, String password, String username, bool isLogin) {}
+  final _auth = FirebaseAuth.instance;
+  var _isLoading = false;
+
+  void _submitAuthForm(String email, String password, String username,
+      bool isLogin, BuildContext ctx) async {
+    final authResult;
+
+    try {
+      if (isLogin) {
+        setState(() {
+          _isLoading = true;
+        });
+
+        authResult = await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+      } else {
+        authResult = await _auth.createUserWithEmailAndPassword(
+            email: email, password: password);
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(authResult.user.uid)
+            .set({
+          'username': username,
+          'email': email,
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      var message = "An error occurred, please check your credentials";
+      if (e.message != null) {
+        message = e.message!;
+      }
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           Scaffold(
             backgroundColor: Colors.transparent,
-            body: AuthForm(submitFn: _submitAuthForm),
+            body: AuthForm(submitFn: _submitAuthForm, isLoading: _isLoading),
           )
         ],
       ),
