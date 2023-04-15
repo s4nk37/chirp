@@ -1,3 +1,4 @@
+import '../pickers/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
@@ -74,17 +75,8 @@ class _AuthFormState extends State<AuthForm> {
                 key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      child: Image.network(
-                          'https://ui-avatars.com/api/?rounded=true&size=80&background=random'),
-                    ),
-                    TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.image),
-                        label: const Text("Upload Image")),
+                    if (!_isLogin) const UserImagePicker(),
                     TextFormField(
                       key: const ValueKey('email'),
                       keyboardType: TextInputType.emailAddress,
@@ -128,6 +120,7 @@ class _AuthFormState extends State<AuthForm> {
                       onPressed: _trySubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.indigoAccent.shade400,
+                        minimumSize: Size(double.infinity, 50),
                         elevation: 0.0,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
