@@ -31,8 +31,8 @@ class ChatScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('Chirp'),
-                    Container(
+                    const Text('Chirp'),
+                    SizedBox(
                       height: 30,
                       child: FittedBox(
                           child: Image.asset(

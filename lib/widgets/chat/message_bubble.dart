@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
   final String msg;
-  final Timestamp createdAt;
+  final String userName;
   final bool isMe;
 
   const MessageBubble(
-      {Key? key,
-      required this.msg,
-      required this.createdAt,
-      required this.isMe})
+      {Key? key, required this.msg, required this.userName, required this.isMe})
       : super(key: key);
 
   @override
@@ -45,7 +42,7 @@ class MessageBubble extends StatelessWidget {
               ),
               Text(
                 // createdAt.toString(),
-                DateTime.now().hour.toString(),
+                '~ $userName',
                 style: TextStyle(color: Colors.grey.shade500, fontSize: 10),
                 textAlign: TextAlign.right,
               ),
