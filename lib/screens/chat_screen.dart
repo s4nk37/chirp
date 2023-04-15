@@ -29,16 +29,18 @@ class ChatScreen extends StatelessWidget {
               title: SizedBox(
                 width: 85,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Chirp'),
                     SizedBox(
                       height: 30,
+                      width: 30,
                       child: FittedBox(
-                          child: Image.asset(
-                        'assets/icon/bird.png',
-                        fit: BoxFit.contain,
-                      )),
+                        child: Image.asset(
+                          'assets/icon/bird.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     )
                   ],
                 ),

@@ -76,6 +76,15 @@ class _AuthFormState extends State<AuthForm> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    CircleAvatar(
+                      radius: 50,
+                      child: Image.network(
+                          'https://ui-avatars.com/api/?rounded=true&size=80&background=random'),
+                    ),
+                    TextButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.image),
+                        label: const Text("Upload Image")),
                     TextFormField(
                       key: const ValueKey('email'),
                       keyboardType: TextInputType.emailAddress,

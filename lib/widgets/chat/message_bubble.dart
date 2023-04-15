@@ -16,7 +16,8 @@ class MessageBubble extends StatelessWidget {
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          padding: EdgeInsets.only(
+              top: 10, bottom: 2, left: 15, right: isMe ? 7 : 12),
           margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
           width: 290,
           decoration: BoxDecoration(
@@ -32,6 +33,7 @@ class MessageBubble extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
                 msg,
