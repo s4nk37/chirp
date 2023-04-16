@@ -1,9 +1,10 @@
 import '../pickers/user_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class AuthForm extends StatefulWidget {
   final void Function(String email, String password, String username,
-      bool isLogin, BuildContext ctx) submitFn;
+      File? image, bool isLogin, BuildContext ctx) submitFn;
   final bool isLoading;
 
   const AuthForm({Key? key, required this.submitFn, required this.isLoading})
@@ -20,6 +21,11 @@ class _AuthFormState extends State<AuthForm> {
   String _userEmail = '';
   String _userName = '';
   String _userPassword = '';
+  File? _userImageFile;
+
+  void _pickedImage(File? image) {
+    _userImageFile = image;
+  }
 
   _validateEmail(String value) {
     String pattern =
@@ -51,10 +57,30 @@ class _AuthFormState extends State<AuthForm> {
   void _trySubmit() {
     var isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
+
+    if (_userImageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please pick an image',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15),
+          ),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
     if (isValid) {
       _formKey.currentState!.save();
-      widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),
-          _isLogin, context);
+      widget.submitFn(
+        _userEmail.trim(),
+        _userPassword.trim(),
+        _userName.trim(),
+        _userImageFile,
+        _isLogin,
+        context,
+      );
     }
   }
 
@@ -76,7 +102,7 @@ class _AuthFormState extends State<AuthForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!_isLogin) const UserImagePicker(),
+                    if (!_isLogin) UserImagePicker(imagePickFn: _pickedImage),
                     TextFormField(
                       key: const ValueKey('email'),
                       keyboardType: TextInputType.emailAddress,
@@ -120,7 +146,7 @@ class _AuthFormState extends State<AuthForm> {
                       onPressed: _trySubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.indigoAccent.shade400,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                         elevation: 0.0,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
