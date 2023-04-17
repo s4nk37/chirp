@@ -19,10 +19,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> main() async {
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // final fbm = FirebaseMessaging.instance;
+  //
+  // fbm.requestPermission();
+  // FirebaseMessaging.onBackgroundMessage((message) async {
+  //   print("OKOKOK: $message");
+  //   return;
+  // });
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final fcmToken = await FirebaseMessaging.instance.getToken();
 
   print(fcmToken);

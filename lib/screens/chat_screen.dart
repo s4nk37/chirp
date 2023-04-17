@@ -1,11 +1,39 @@
 import 'package:chirp/widgets/chat/new_message.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../widgets/chat/messages.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    final fbm = FirebaseMessaging.instance;
+
+    FirebaseMessaging.onBackgroundMessage((message) async {
+      print("BACK YES");
+      print(message);
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print('Got a message whilst in the foreground!');
+      final a = await message.data.toString();
+      print('Message data: $a');
+
+      if (message.notification != null) {
+        print(
+            'Message also contained a notification: ${message.notification!.title} ${message.notification!.body}');
+      }
+    });
+    fbm.requestPermission();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
