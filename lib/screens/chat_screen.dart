@@ -1,8 +1,19 @@
 import 'package:chirp/widgets/chat/new_message.dart';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../widgets/chat/messages.dart';
+// import 'package:firebase_core/firebase_core.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.notification}");
+}
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -16,15 +27,18 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     final fbm = FirebaseMessaging.instance;
 
-    FirebaseMessaging.onBackgroundMessage((message) async {
-      print("BACK YES");
-      print(message);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    print(fbm.isAutoInitEnabled);
+    // for sending push notification
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("ONMESSAGEOPENED : $message");
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('Got a message whilst in the foreground!');
-      final a = await message.data.toString();
-      print('Message data: $a');
+
+      print('Message data: ${message}');
 
       if (message.notification != null) {
         print(
@@ -32,6 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     });
     fbm.requestPermission();
+
     super.initState();
   }
 
@@ -113,6 +128,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: Messages(),
                 ),
+                // ElevatedButton(
+                //     onPressed: sendPushNotification,
+                //     child: Text("Send Message")),
                 NewMessage(),
               ],
             ),

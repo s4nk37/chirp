@@ -9,30 +9,19 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 bool shouldUseFirestoreEmulator = false;
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // final fbm = FirebaseMessaging.instance;
-  //
-  // fbm.requestPermission();
-  // FirebaseMessaging.onBackgroundMessage((message) async {
-  //   print("OKOKOK: $message");
-  //   return;
-  // });
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await FirebaseMessaging.instance.subscribeToTopic("chats");
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final fcmToken = await FirebaseMessaging.instance.getToken();
-
-  print(fcmToken);
+  print(FirebaseAuth.instance.currentUser!.uid);
+  final db = FirebaseFirestore.instance;
+  final ref =
+      db.collection("users").doc(FirebaseAuth.instance.currentUser!.uid);
+  ref.update({"fcmToken": fcmToken}).then(
+      (value) => print("DocumentSnapshot successfully updated!"),
+      onError: (e) => print("Error updating document $e"));
 
   if (shouldUseFirestoreEmulator) {
     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
