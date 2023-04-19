@@ -73,6 +73,7 @@ class _NewMessageState extends State<NewMessage> {
           Expanded(
             child: TextField(
               controller: _controller,
+              enableSuggestions: true,
               decoration: const InputDecoration(
                 hintText: 'Send a message...',
                 border: InputBorder.none,
