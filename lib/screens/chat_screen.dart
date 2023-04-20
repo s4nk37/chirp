@@ -25,10 +25,12 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
+    FirebaseMessaging.instance.subscribeToTopic("chats");
     final fbm = FirebaseMessaging.instance;
+    fbm.requestPermission();
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    print(fbm.isAutoInitEnabled);
+    // print(fbm.isAutoInitEnabled);
     // for sending push notification
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -45,7 +47,6 @@ class _ChatScreenState extends State<ChatScreen> {
             'Message also contained a notification: ${message.notification!.title} ${message.notification!.body}');
       }
     });
-    fbm.requestPermission();
 
     super.initState();
   }

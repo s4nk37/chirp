@@ -1,29 +1,27 @@
-import 'package:chirp/screens/chat_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
 import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '/screens/chat_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/splash_screen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 bool shouldUseFirestoreEmulator = false;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseMessaging.instance.subscribeToTopic("chats");
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  // print(FirebaseAuth.instance.currentUser!.uid);
+
   if (FirebaseAuth.instance.currentUser != null) {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
     final db = FirebaseFirestore.instance;
     final ref =
         db.collection("users").doc(FirebaseAuth.instance.currentUser!.uid);
-    ref.update({"fcmToken": fcmToken}).then(
-        (value) => print("DocumentSnapshot successfully updated!"),
-        onError: (e) => print("Error updating document $e"));
+    ref.update({"fcmToken": fcmToken});
   }
 
   if (shouldUseFirestoreEmulator) {
@@ -43,12 +41,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
       ),
       debugShowCheckedModeBanner: false,
-      // home: const AuthScreen(),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (ctx, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return SplashScreen();
+            return const SplashScreen();
           }
           if (userSnapshot.hasData) {
             return const ChatScreen();

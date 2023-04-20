@@ -1,6 +1,7 @@
-import '../pickers/user_image_picker.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import '../pickers/user_image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthForm extends StatefulWidget {
   final void Function(String email, String password, String username,
@@ -17,17 +18,21 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   bool _toggleVisibility = true;
   bool _isLogin = true;
+  bool _showPasswordResetCard = false;
+  bool _isSuccessfullySent = false;
+
   final _formKey = GlobalKey<FormState>();
   String _userEmail = '';
   String _userName = '';
   String _userPassword = '';
   File? _userImageFile;
+  TextEditingController _userPassResetEmail = TextEditingController();
 
   void _pickedImage(File? image) {
     _userImageFile = image;
   }
 
-  _validateEmail(String value) {
+  String? _validateEmail(String value) {
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern);
@@ -38,7 +43,7 @@ class _AuthFormState extends State<AuthForm> {
     }
   }
 
-  _validatePassword(String value) {
+  String? _validatePassword(String value) {
     if (value.isEmpty) {
       return 'Password field cannot be empty';
     }
@@ -46,12 +51,14 @@ class _AuthFormState extends State<AuthForm> {
     if (value.length < 7) {
       return 'Password length must be greater than 7';
     }
+    return null;
   }
 
-  _validateUserName(String value) {
+  String? _validateUserName(String value) {
     if (value.isEmpty) {
       return 'Username cannot be empty';
     }
+    return null;
   }
 
   void _trySubmit() {
@@ -84,14 +91,74 @@ class _AuthFormState extends State<AuthForm> {
     }
   }
 
+  Future<void> _tryResetRequest() async {
+    await FirebaseAuth.instance
+        .sendPasswordResetEmail(email: _userPassResetEmail.text.trim())
+        .whenComplete(() {
+      setState(() {
+        _isSuccessfullySent = true;
+      });
+    });
+  }
+
+  void _showForgotPassModal() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 35.0, horizontal: 35),
+              child: _isSuccessfullySent
+                  ? const Text("Email sent successfully.")
+                  : Column(
+                      // mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          key: const ValueKey('forgot-pass-email'),
+                          autocorrect: false,
+                          textCapitalization: TextCapitalization.none,
+                          enableSuggestions: false,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                              labelText: 'Email',
+                              border: InputBorder.none,
+                              filled: true,
+                              fillColor: Colors.grey.shade300.withOpacity(0.4)),
+                          onChanged: (val) => _validateEmail(val),
+                          controller: _userPassResetEmail,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          onPressed: _tryResetRequest,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.indigoAccent.shade400,
+                            minimumSize: const Size(double.infinity, 50),
+                            elevation: 0.0,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                          child: const Text("Send Password Reset Email"),
+                        ),
+                      ],
+                    ),
+            ),
+          );
+        });
+  }
+
+  @override
+  void dispose() {
+    _userPassResetEmail.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-        borderOnForeground: false,
         elevation: 0.0,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
         color: Colors.white.withOpacity(0.5),
         margin: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -168,6 +235,17 @@ class _AuthFormState extends State<AuthForm> {
                       child: Text(_isLogin
                           ? "Create a new account"
                           : "Already have an account?"),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _showForgotPassModal();
+                        });
+                      },
+                      child: const Text(
+                        "Forgot password?",
+                        style: TextStyle(color: Colors.black54),
+                      ),
                     ),
                   ],
                 )),
