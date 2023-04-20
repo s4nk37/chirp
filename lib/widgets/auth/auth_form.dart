@@ -18,7 +18,6 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   bool _toggleVisibility = true;
   bool _isLogin = true;
-  bool _showPasswordResetCard = false;
   bool _isSuccessfullySent = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -26,7 +25,7 @@ class _AuthFormState extends State<AuthForm> {
   String _userName = '';
   String _userPassword = '';
   File? _userImageFile;
-  TextEditingController _userPassResetEmail = TextEditingController();
+  final _userPassResetEmail = TextEditingController();
 
   void _pickedImage(File? image) {
     _userImageFile = image;
@@ -98,6 +97,7 @@ class _AuthFormState extends State<AuthForm> {
       setState(() {
         _isSuccessfullySent = true;
       });
+      _userPassResetEmail.dispose();
     });
   }
 
@@ -146,12 +146,6 @@ class _AuthFormState extends State<AuthForm> {
             ),
           );
         });
-  }
-
-  @override
-  void dispose() {
-    _userPassResetEmail.dispose();
-    super.dispose();
   }
 
   @override

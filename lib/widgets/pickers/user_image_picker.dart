@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -51,7 +49,8 @@ class _UserImagePickerState extends State<UserImagePicker> {
               alignment: Alignment.topCenter,
               child: TextButton.icon(
                 style: TextButton.styleFrom(
-                    alignment: Alignment.topCenter, maximumSize: Size(150, 40)),
+                    alignment: Alignment.topCenter,
+                    maximumSize: const Size(150, 40)),
                 onPressed: _pickImage,
                 icon: const Icon(
                   Icons.image,

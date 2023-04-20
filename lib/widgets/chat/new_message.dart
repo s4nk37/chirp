@@ -46,7 +46,7 @@ class _NewMessageState extends State<NewMessage> {
           "topic": "chats",
         };
 
-        var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
             headers: {
               HttpHeaders.contentTypeHeader: 'application/json',
               HttpHeaders.authorizationHeader: 'key=$fcmServerKey',

@@ -40,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('Got a message whilst in the foreground!');
 
-      print('Message data: ${message}');
+      print('Message data: $message');
 
       if (message.notification != null) {
         print(
