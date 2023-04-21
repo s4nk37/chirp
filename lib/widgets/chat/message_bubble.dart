@@ -58,7 +58,9 @@ class MessageBubble extends StatelessWidget {
               Text(
                 // createdAt.toString(),
                 '~ $userName',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 10),
+                style: TextStyle(
+                    color: isMe ? Colors.white70 : Colors.grey.shade500,
+                    fontSize: 10),
                 textAlign: TextAlign.right,
               ),
             ],
