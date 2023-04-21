@@ -39,6 +39,7 @@ class _NewMessageState extends State<NewMessage> {
         final body = {
           "to": "/topics/chats",
           "collapse_key": "chat",
+          "tag": "chat",
           "notification": {
             "title": userData.data()!['username'],
             "body": _enteredMessage,
@@ -76,6 +77,7 @@ class _NewMessageState extends State<NewMessage> {
               enableSuggestions: true,
               decoration: const InputDecoration(
                 hintText: 'Send a message...',
+                hintStyle: TextStyle(color: Colors.white70),
                 border: InputBorder.none,
               ),
               onChanged: (value) {
@@ -90,7 +92,10 @@ class _NewMessageState extends State<NewMessage> {
           ),
           IconButton(
             onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
-            icon: const Icon(Icons.send),
+            icon: Icon(
+              Icons.send,
+              color: Colors.white.withOpacity(0.7),
+            ),
           ),
         ],
       ),
