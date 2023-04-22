@@ -24,7 +24,7 @@ class MessageBubble extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(left: 5.0, bottom: 10),
             child: CircleAvatar(
-              radius: 20,
+              radius: 15,
               backgroundImage: NetworkImage(userImageUrl),
             ),
           ),

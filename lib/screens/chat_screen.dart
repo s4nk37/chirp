@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:chirp/widgets/chat/new_message.dart';
 
 import 'package:flutter/material.dart';
@@ -29,23 +31,21 @@ class _ChatScreenState extends State<ChatScreen> {
     fbm.requestPermission();
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    // print(fbm.isAutoInitEnabled);
-    // for sending push notification
-
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print("ONMESSAGEOPENED : $message");
     });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print('Got a message whilst in the foreground!');
-
-      print('Message data: $message');
-
-      if (message.notification != null) {
-        print(
-            'Message also contained a notification: ${message.notification!.title} ${message.notification!.body}');
-      }
-    });
+    //Uncomment If you want to listen foreground message
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    //   print('Got a message whilst in the foreground!');
+    //
+    //   print('Message data: $message');
+    //
+    //   if (message.notification != null) {
+    //     print(
+    //         'Message also contained a notification: ${message.notification!.title} ${message.notification!.body}');
+    //   }
+    // });
 
     super.initState();
   }
@@ -53,15 +53,17 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.indigo,
         title: SizedBox(
           width: 85,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Chirp'),
+              const Text(
+                'Chirp',
+              ),
               SizedBox(
                 height: 30,
                 width: 30,
@@ -109,6 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
+        foregroundColor: Colors.white70,
       ),
       body: Container(
         height: double.infinity,

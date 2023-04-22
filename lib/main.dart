@@ -48,6 +48,7 @@ class MyApp extends StatelessWidget {
             return const SplashScreen();
           }
           if (userSnapshot.hasData) {
+            // FirebaseAuth.instance.
             return const ChatScreen();
           }
           return const AuthScreen();
