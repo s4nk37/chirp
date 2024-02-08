@@ -139,7 +139,10 @@ class _AuthFormState extends State<AuthForm> {
                             elevation: 0.0,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                           ),
-                          child: const Text("Send Password Reset Email"),
+                          child: const Text(
+                            "Send Password Reset Email",
+                            style: TextStyle(color: Colors.white70),
+                          ),
                         ),
                       ],
                     ),
@@ -218,7 +221,10 @@ class _AuthFormState extends State<AuthForm> {
                       ),
                       child: widget.isLoading
                           ? const CircularProgressIndicator()
-                          : Text(_isLogin ? "Login" : "Signup"),
+                          : Text(
+                              _isLogin ? "Login" : "Signup",
+                              style: const TextStyle(color: Colors.white70),
+                            ),
                     ),
                     TextButton(
                       onPressed: () {
